@@ -222,7 +222,12 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
-      const mergedStyle = {...style, ...passthruStyle};
+      const styleCSS = this._propsAnimated.__getStyleCSS();
+      let mergedStyle = {...style, ...passthruStyle};
+      if (styleCSS)
+      {
+          mergedStyle = [styleCSS, mergedStyle];
+      }
 
       return (
         <Component

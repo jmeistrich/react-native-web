@@ -20,15 +20,27 @@ import invariant from 'fbjs/lib/invariant';
 
 class AnimatedProps extends AnimatedNode {
   _props: Object;
+  _styleCSS: Object;
   _animatedView: any;
   _callback: () => void;
 
   constructor(props: Object, callback: () => void) {
     super();
     if (props.style) {
+        let style = props.style;
+        if (Array.isArray(style))
+        {
+            const index = style.findIndex(a => a['$$css']);
+            if (index >= 0)
+            {
+                this._styleCSS = style[index];
+                style = style.slice();
+                style.splice(index, 1);
+            }
+        }
       props = {
         ...props,
-        style: new AnimatedStyle(props.style),
+        style: new AnimatedStyle(style),
       };
     }
     this._props = props;
@@ -170,6 +182,10 @@ class AnimatedProps extends AnimatedNode {
       type: 'props',
       props: propsConfig,
     };
+  }
+
+  __getStyleCSS(): Object {
+      return this._styleCSS;
   }
 }
 
