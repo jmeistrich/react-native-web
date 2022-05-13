@@ -27,17 +27,8 @@ class AnimatedProps extends AnimatedNode {
   constructor(props: Object, callback: () => void) {
     super();
     if (props.style) {
-        let style = props.style;
-        if (Array.isArray(style))
-        {
-            const index = style.findIndex(a => a['$$css']);
-            if (index >= 0)
-            {
-                this._styleCSS = style[index];
-                style = style.slice();
-                style.splice(index, 1);
-            }
-        }
+      let style = props.style;
+      this.__extractCSS(style);
       props = {
         ...props,
         style: new AnimatedStyle(style),
@@ -46,6 +37,24 @@ class AnimatedProps extends AnimatedNode {
     this._props = props;
     this._callback = callback;
     this.__attach();
+  }
+
+  __extractCSS(style: any): Object {
+        if (Array.isArray(style))
+        {
+            style.some((s, index) => {
+                if (Array.isArray(s))
+                {
+                    this.__extractCSS(s);
+                }
+                else if (s && s['$$css'])
+                {
+                    this._styleCSS = s;
+                    style.splice(index, 1);
+                    return true;
+                }
+            });
+        }
   }
 
   __getValue(): Object {

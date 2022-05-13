@@ -21,6 +21,7 @@ declare class AnimatedProps extends AnimatedNode {
   _animatedView: any,
   _callback: () => void,
   constructor(props: Object, callback: () => void): any,
+  __extractCSS(style: any): Object,
   __getValue(): Object,
   __getAnimatedValue(): Object,
   __attach(): void,

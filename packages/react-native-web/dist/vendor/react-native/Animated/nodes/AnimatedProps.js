@@ -37,17 +37,7 @@ var AnimatedProps = /*#__PURE__*/function (_AnimatedNode) {
     if (props.style) {
       var style = props.style;
 
-      if (Array.isArray(style)) {
-        var index = style.findIndex(function (a) {
-          return a['$$css'];
-        });
-
-        if (index >= 0) {
-          _this._styleCSS = style[index];
-          style = style.slice();
-          style.splice(index, 1);
-        }
-      }
+      _this.__extractCSS(style);
 
       props = _objectSpread(_objectSpread({}, props), {}, {
         style: new AnimatedStyle(style)
@@ -63,6 +53,22 @@ var AnimatedProps = /*#__PURE__*/function (_AnimatedNode) {
   }
 
   var _proto = AnimatedProps.prototype;
+
+  _proto.__extractCSS = function __extractCSS(style) {
+    var _this2 = this;
+
+    if (Array.isArray(style)) {
+      style.some(function (s, index) {
+        if (Array.isArray(s)) {
+          _this2.__extractCSS(s);
+        } else if (s && s['$$css']) {
+          _this2._styleCSS = s;
+          style.splice(index, 1);
+          return true;
+        }
+      });
+    }
+  };
 
   _proto.__getValue = function __getValue() {
     var props = {};
